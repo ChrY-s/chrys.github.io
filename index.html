@@ -129,7 +129,7 @@
       display.textContent = value;
   
       // valore tra 0 e 100
-      let v = Math.max(75, Math.min(96, value));
+      let v = Math.max(0, Math.min(100, value));
   
       // da -90° a +90°
       let angle = -90 + (v * 180 / 100);
