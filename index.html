@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>Aircheck</title>
+</head>
+<body>
+  <h1>Qualità dell'aria: Dati in tempo reale</h1>
+
+  <h4>Indice di qualità</h4>
+  <div class="gauge-container">
+    <svg class="gauge" viewBox="0 0 200 120">
+      
+      <!-- zona rossa -->
+      <path d="M 20 100 A 80 80 0 0 1 70 45"
+            fill="none"
+            stroke="#ff3b3b"
+            stroke-width="18"
+            stroke-linecap="round"/>
+  
+      <!-- zona gialla -->
+      <path d="M 70 45 A 80 80 0 0 1 130 45"
+            fill="none"
+            stroke="#ffd000"
+            stroke-width="18"
+            stroke-linecap="round"/>
+  
+      <!-- zona verde -->
+      <path d="M 130 45 A 80 80 0 0 1 180 100"
+            fill="none"
+            stroke="#2cff6b"
+            stroke-width="18"
+            stroke-linecap="round"/>
+  
+      <!-- ago -->
+      <line id="needle"
+            x1="100" y1="100"
+            x2="100" y2="30"
+            stroke="#ffffff"
+            stroke-width="3"
+            stroke-linecap="round"/>
+  
+      <!-- perno -->
+      <circle cx="100" cy="100" r="6" fill="#ffffff"/>
+    </svg>
+  
+    <div id="gaugeValue">--</div>
+  </div>
+  <p>
+    <span id="quality">%QUALITY%</span>
+  </p>
+
+  <div class="section">
+    <p>
+      <span class="sensor-labels">Umidità </span>
+      <span id="humidity">%HUMIDITY%</span>
+    </p>
+  
+    <p>
+      <span class="sensor-labels">Metano </span>
+      <span id="methane">%METHANE%</span>
+    </p>
+  
+    <p>
+      <span class="sensor-labels">Monossido di Carbonio </span>
+      <span id="co">%CO%</span>
+    </p>
+  </div>
+  
+  <h4>Vai ai dettagli</h4>
+  <p>
+    <a href="/details_humidity"><button class="button">Umidità</button></a>
+    <a href="/details_methane"><button class="button">Metano</button></a>
+    <a href="/details_co"><button class="button">CO</button></a>
+  </p>
+
+  <h4>Controllo Manuale</h4>
+  <p>
+    <button onclick="new Image().src='/manual_start';" class="button">Avvia</button>
+    <button onclick="new Image().src='/manual_stop';" class="button">Automatico</button>
+  </p>
+
+</body>
+
+  <script>
+    // Numero casuale tra 15 e 50
+    function valoreCasuale() {
+      return Math.floor(Math.random() * (50 - 15 + 1)) + 15;
+    }
+  
+    function updateSensorValue(id, value) {
+      document.getElementById(id).textContent = value;
+  
+      if (id === 'quality') {
+        updateGauge(value);
+      }
+    }
+  
+    // Aggiorna tutti i sensori ogni 2 secondi
+    setInterval(() => {
+      updateSensorValue('co', valoreCasuale());
+      updateSensorValue('humidity', valoreCasuale());
+      updateSensorValue('methane', valoreCasuale());
+      updateSensorValue('quality', valoreCasuale());
+    }, 2000);
+  
+    // Prima visualizzazione immediata
+    updateSensorValue('co', valoreCasuale());
+    updateSensorValue('humidity', valoreCasuale());
+    updateSensorValue('methane', valoreCasuale());
+    updateSensorValue('quality', valoreCasuale());
+  
+    const buttons = document.querySelectorAll('.button');
+  
+    buttons.forEach(button => {
+      button.addEventListener('click', () => {
+        buttons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+      });
+    });
+  
+    // Aggiorna indicatore QoA
+    function updateGauge(value) {
+      const needle = document.getElementById("needle");
+      const display = document.getElementById("gaugeValue");
+  
+      display.textContent = value;
+  
+      // valore tra 0 e 100
+      let v = Math.max(0, Math.min(100, value));
+  
+      // da -90° a +90°
+      let angle = -90 + (v * 180 / 100);
+  
+      // rotazione attorno al centro inferiore dell'ago
+      needle.style.transformOrigin = "100px 100px";
+      needle.style.transform = `rotate(${angle}deg)`;
+    }
+  </script>
+
+</html>
